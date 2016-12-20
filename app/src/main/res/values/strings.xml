@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">BeMyGuest</string>
+
+
+    <!-- RUNTIME PERMISSIONS -->
+    <string name="application_settings">Application Settings</string>
+    <string name="application_help">Help</string>
+    <string name="application_help_text"> Required permission is missing.\n\nTo grant this permission click on Settings, then Permissions and turn the permission on.\n\nThen click back twice to return to the app</string>
+    <string name="application_quit">Exit App</string>
+
 </resources>

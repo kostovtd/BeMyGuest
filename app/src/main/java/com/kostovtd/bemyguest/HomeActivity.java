@@ -8,6 +8,8 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.kostovtd.bemyguest.util.PermissionsChecker;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -18,6 +20,16 @@ import butterknife.ButterKnife;
 public class HomeActivity extends Activity {
 
     private static final String TAG = HomeActivity.class.getSimpleName();
+
+    private static final String[] PERMISSIONS = new String[] {
+
+    };
+
+
+    private PermissionsChecker permissionsChecker;
+
+
+
 
     @BindView(R.id.root_container)
     LinearLayout rootContainer;
@@ -31,6 +43,8 @@ public class HomeActivity extends Activity {
         setContentView(R.layout.activity_home);
 
         ButterKnife.bind(this);
+
+        permissionsChecker = new PermissionsChecker(this);
 
         bCountUsers.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -47,6 +61,9 @@ public class HomeActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
+        if(permissionsChecker.lacksPermissions(PERMISSIONS)) {
+            startPermissionsActivity();
+        }
     }
 
 
@@ -59,5 +76,9 @@ public class HomeActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    private void startPermissionsActivity() {
+        PermissionsActivity.startActivityForResult(this, PermissionsActivity.PERMISSION_REQUEST_CODE, PERMISSIONS);
     }
 }
