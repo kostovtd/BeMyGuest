@@ -22,13 +22,11 @@ public class HomeActivity extends Activity {
     private static final String TAG = HomeActivity.class.getSimpleName();
 
     private static final String[] PERMISSIONS = new String[] {
-
+            //TODO add permissions here
     };
 
 
     private PermissionsChecker permissionsChecker;
-
-
 
 
     @BindView(R.id.root_container)
@@ -36,6 +34,7 @@ public class HomeActivity extends Activity {
 
     @BindView(R.id.button_count_users)
     Button bCountUsers;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +76,7 @@ public class HomeActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
     }
+
 
     private void startPermissionsActivity() {
         PermissionsActivity.startActivityForResult(this, PermissionsActivity.PERMISSION_REQUEST_CODE, PERMISSIONS);
