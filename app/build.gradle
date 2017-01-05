@@ -7,7 +7,7 @@ android {
     buildToolsVersion "25.0.1"
     defaultConfig {
         applicationId "com.kostovtd.bemyguest"
-        minSdkVersion 24
+        minSdkVersion 18
         targetSdkVersion 25
         versionCode 1
         versionName "1.0"
@@ -28,6 +28,7 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:25.0.1'
     compile 'com.jakewharton:butterknife:8.4.0'
+    compile 'eu.chainfire:libsuperuser:1.0.0.+'
     apt 'com.jakewharton:butterknife-compiler:8.4.0'
     testCompile 'junit:junit:4.12'
 }

@@ -7,15 +7,10 @@
     android:id="@+id/root_container">
 
     <Button
-        android:id="@+id/button_test_create_user"
+        android:id="@+id/button_test"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Create User"/>
+        android:text="Test"/>
 
-    <Button
-        android:id="@+id/button_count_users"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Count Users"/>
 
 </LinearLayout>
