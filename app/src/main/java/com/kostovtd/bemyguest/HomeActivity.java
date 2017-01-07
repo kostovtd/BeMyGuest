@@ -7,25 +7,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.os.UserManager;
-import android.os.health.ServiceHealthStats;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.kostovtd.bemyguest.manager.GuestManager;
 import com.kostovtd.bemyguest.manager.StatusMessage;
+import com.kostovtd.bemyguest.model.ShellCommandResult;
 import com.kostovtd.bemyguest.util.KeyUtil;
 import com.kostovtd.bemyguest.util.PermissionsChecker;
 
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import eu.chainfire.libsuperuser.Shell;
 
 /**
  * Created by Todor on 12/17/2016.
@@ -72,7 +67,18 @@ public class HomeActivity extends Activity {
                     case StatusMessage.NO_SU_AVAILABLE:
                         Snackbar.make(rootContainer, R.string.status_no_su_available, Snackbar.LENGTH_LONG).show();
                         break;
-                    case StatusMessage.CREATE_GUEST_SUCCESSFULL:
+                    case StatusMessage.ERROR_EXECUTING_SU_COMMANDS:
+                        Snackbar.make(rootContainer, R.string.status_error_executing_su_command,
+                                Snackbar.LENGTH_LONG).show();
+                        break;
+                    case StatusMessage.MISSING_DIRECTORY:
+                        if(msg.getData() != null) {
+                            Bundle bundle = msg.getData();
+                            String errorStr = bundle.getString(KeyUtil.MISSING_DIRECTORY_KEY);
+                            Snackbar.make(rootContainer, errorStr, Snackbar.LENGTH_LONG).show();
+                        }
+                        break;
+                    case StatusMessage.CREATE_GUEST_SUCCESSFUL:
                         if(msg.getData() != null) {
                             Bundle bundle = msg.getData();
                             ShellCommandResult shellCommandResult = bundle.getParcelable(KeyUtil.CREATE_GUEST_RESULT_KEY);
@@ -87,7 +93,7 @@ public class HomeActivity extends Activity {
         };
 
 
-        final GuestManager guestManager = new GuestManager(mHandler);
+        final GuestManager guestManager = new GuestManager(this, mHandler);
 
         bTest.setOnClickListener(new View.OnClickListener() {
             @Override

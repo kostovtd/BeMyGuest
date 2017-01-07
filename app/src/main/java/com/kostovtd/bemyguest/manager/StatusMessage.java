@@ -8,9 +8,11 @@ public class StatusMessage {
 
 //    ERROR STATUSES
     public static final int NO_SU_AVAILABLE = -1;
+    public static final int ERROR_EXECUTING_SU_COMMANDS = -2;
+    public static final int MISSING_DIRECTORY = -3;
 
 
 //    SUCCESS STATUSES
-    public static final int CREATE_GUEST_SUCCESSFULL = 1;
+    public static final int CREATE_GUEST_SUCCESSFUL = 1;
 
 }

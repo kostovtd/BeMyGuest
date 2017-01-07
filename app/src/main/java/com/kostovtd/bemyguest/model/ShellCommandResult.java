@@ -1,4 +1,4 @@
-package com.kostovtd.bemyguest;
+package com.kostovtd.bemyguest.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

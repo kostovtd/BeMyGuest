@@ -7,5 +7,6 @@ package com.kostovtd.bemyguest.util;
 public class KeyUtil {
 
     public static final String CREATE_GUEST_RESULT_KEY = "create_guest_result_key";
+    public static final String MISSING_DIRECTORY_KEY = "missing_directory_key";
 
 }

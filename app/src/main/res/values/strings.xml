@@ -11,5 +11,7 @@
 
     <!-- STATUS MESSAGES -->
     <string name="status_no_su_available">SuperUser is not available.</string>
+    <string name="status_error_executing_su_command">An error occurred while executing SuperUser commands.</string>
+    <string name="status_missing_directory">Directory %1$s is missing!</string>
 
 </resources>
