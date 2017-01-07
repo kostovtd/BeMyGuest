@@ -1,15 +1,24 @@
 package com.kostovtd.bemyguest;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.os.UserManager;
+import android.os.health.ServiceHealthStats;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.kostovtd.bemyguest.manager.GuestManager;
+import com.kostovtd.bemyguest.manager.StatusMessage;
+import com.kostovtd.bemyguest.util.KeyUtil;
 import com.kostovtd.bemyguest.util.PermissionsChecker;
 
 import java.util.List;
@@ -52,16 +61,38 @@ public class HomeActivity extends Activity {
 
         permissionsChecker = new PermissionsChecker(this);
 
+        final Context context = HomeActivity.this;
+
+        Handler mHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                int status = msg.what;
+
+                switch (status) {
+                    case StatusMessage.NO_SU_AVAILABLE:
+                        Snackbar.make(rootContainer, R.string.status_no_su_available, Snackbar.LENGTH_LONG).show();
+                        break;
+                    case StatusMessage.CREATE_GUEST_SUCCESSFULL:
+                        if(msg.getData() != null) {
+                            Bundle bundle = msg.getData();
+                            ShellCommandResult shellCommandResult = bundle.getParcelable(KeyUtil.CREATE_GUEST_RESULT_KEY);
+                            if(shellCommandResult != null)
+                                Log.d(TAG, "Shell result: " + shellCommandResult.toString());
+                        }
+                        break;
+                }
+
+
+            }
+        };
+
+
+        final GuestManager guestManager = new GuestManager(mHandler);
+
         bTest.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "SU available: " + Shell.SU.available());
-                Log.d(TAG, "SU version: " + Shell.SU.version(true));
-                List<String> resultString = Shell.SU.run("ls /data/system/users/");
-                Log.d(TAG, "result size: " + resultString.size());
-                for(String result : resultString) {
-                    Log.d(TAG, result + "\n");
-                }
+                guestManager.createGuestUser();
              }
         });
     }
@@ -92,10 +123,6 @@ public class HomeActivity extends Activity {
         PermissionsActivity.startActivityForResult(this, PermissionsActivity.PERMISSION_REQUEST_CODE, PERMISSIONS);
     }
 
-    private void testCreateUser() {
-        Intent createUserIntent = UserManager.createUserCreationIntent("userName", "accoutName", null, null);
-        startActivityForResult(createUserIntent, REQUEST_CODE);
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

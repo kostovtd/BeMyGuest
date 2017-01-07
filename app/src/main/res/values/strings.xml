@@ -8,4 +8,8 @@
     <string name="application_help_text"> Required permission is missing.\n\nTo grant this permission click on Settings, then Permissions and turn the permission on.\n\nThen click back twice to return to the app</string>
     <string name="application_quit">Exit App</string>
 
+
+    <!-- STATUS MESSAGES -->
+    <string name="status_no_su_available">SuperUser is not available.</string>
+
 </resources>
