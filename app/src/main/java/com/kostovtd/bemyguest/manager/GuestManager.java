@@ -11,6 +11,11 @@ import com.kostovtd.bemyguest.model.ShellCommandResult;
 import com.kostovtd.bemyguest.util.KeyUtil;
 import com.kostovtd.bemyguest.util.ShellCommandsUtil;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,17 +35,18 @@ public class GuestManager {
 
     private Handler mHandler;
     private Context mContext;
+    private XmlManager xmlManager;
 
 
     public GuestManager(Context context, Handler handler) {
         this.mContext = context;
         this.mHandler = handler;
+        this.xmlManager = new XmlManager();
     }
 
 
     public void createGuestUser() {
         Log.d(TAG, "createGuestUser: hit");
-
 
         final Runnable createGuestRunnable = new Runnable() {
             @Override
@@ -60,7 +66,17 @@ public class GuestManager {
                         boolean userListFileExists = userListFile.exists();
 
                         if(userListFileExists) {
-
+//                            String changeDir = ShellCommandsUtil.CHANGE_CURRENT_DIRECTORY + " " + USER_DIR;
+//                            String chmod = "chmod 666 userlist.xml";
+//                            List<String> commands = new ArrayList<>();
+//                            commands.add(changeDir);
+//                            commands.add(chmod);
+//                            Shell.SU.run(commands);
+                            Document userListDocument = xmlManager.loadFile(userListFile);
+                            if(userListDocument != null) {
+                                userListDocument = updateUserListFile(userListDocument);
+                                xmlManager.updateFile(userListDocument, userListFile);
+                            }
                         } else {
                             String missingDirStr = mContext.getString(R.string.status_missing_directory);
                             String dirStr = USER_DIR + USER_LIST_FILE_NAME;
@@ -79,32 +95,32 @@ public class GuestManager {
 
                     // check if the USER_DIR exists DONE
                     // check if userlist.xml exists DONE
-                    // parse userlist.xml DOM
-                    // edit userlist.xml increase values
+                    // parse userlist.xml DOM DONE
+                    // edit userlist.xml increase values DONE
                     // create new user dir + new_user.xml
                     // create accounts.db + accounts.db-journal + package-restrictions.xml + settings.db
                     // + settings.db-journal
                     // reboot
-                    String goToUserDirCommand = ShellCommandsUtil.CHANGE_CURRENT_DIRECTORY + " " + USER_DIR;
-                    String printFilesInUserDirCommand = ShellCommandsUtil.PRINT_CURRENT_DIRECTORY ;
-
-                    ArrayList<String> suCommandsList = new ArrayList<>();
-                    suCommandsList.add(goToUserDirCommand);
-                    suCommandsList.add(printFilesInUserDirCommand);
-
-                    List<String> resultList = Shell.SU.run(suCommandsList);
-
-                    if(resultList != null) {
-                        ShellCommandResult shellCommandResult = new ShellCommandResult(resultList);
-                        Message message = mHandler.obtainMessage();
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable(KeyUtil.CREATE_GUEST_RESULT_KEY, shellCommandResult);
-                        message.what = StatusMessage.CREATE_GUEST_SUCCESSFUL;
-                        message.setData(bundle);
-                        mHandler.sendMessage(message);
-                    } else {
-                        mHandler.sendEmptyMessage(StatusMessage.ERROR_EXECUTING_SU_COMMANDS);
-                    }
+//                    String goToUserDirCommand = ShellCommandsUtil.CHANGE_CURRENT_DIRECTORY + " " + USER_DIR;
+//                    String printFilesInUserDirCommand = ShellCommandsUtil.PRINT_CURRENT_DIRECTORY ;
+//
+//                    ArrayList<String> suCommandsList = new ArrayList<>();
+//                    suCommandsList.add(goToUserDirCommand);
+//                    suCommandsList.add(printFilesInUserDirCommand);
+//
+//                    List<String> resultList = Shell.SU.run(suCommandsList);
+//
+//                    if(resultList != null) {
+//                        ShellCommandResult shellCommandResult = new ShellCommandResult(resultList);
+//                        Message message = mHandler.obtainMessage();
+//                        Bundle bundle = new Bundle();
+//                        bundle.putParcelable(KeyUtil.CREATE_GUEST_RESULT_KEY, shellCommandResult);
+//                        message.what = StatusMessage.CREATE_GUEST_SUCCESSFUL;
+//                        message.setData(bundle);
+//                        mHandler.sendMessage(message);
+//                    } else {
+//                        mHandler.sendEmptyMessage(StatusMessage.ERROR_EXECUTING_SU_COMMANDS);
+//                    }
 
                 } else {
                     mHandler.sendEmptyMessage(StatusMessage.NO_SU_AVAILABLE);
@@ -141,5 +157,35 @@ public class GuestManager {
         errorMessage.setData(bundle);
 
         return errorMessage;
+    }
+
+
+
+
+    private Document updateUserListFile(Document userListDocument) {
+        // update userlist node attributes
+        Node userListNode = userListDocument.getFirstChild();
+        NamedNodeMap userListNodeAttrs = userListNode.getAttributes();
+
+        // read nextSerialNumber attribute
+        Node userListNodeNextNumberAttr = userListNodeAttrs.getNamedItem("nextSerialNumber");
+        int numberValue = Integer.parseInt(userListNodeNextNumberAttr.getTextContent());
+
+        // new user element
+        Element userElement = userListDocument.createElement("user");
+        userElement.setAttribute("id", String.valueOf(numberValue));
+        userListNode.appendChild(userElement);
+
+        // update nextSerialNumber attribute
+        numberValue++;
+        userListNodeNextNumberAttr.setNodeValue(String.valueOf(numberValue));
+
+        // update version attribute
+        Node userListNodeVersionAttr = userListNodeAttrs.getNamedItem("version");
+        int versionValue = Integer.parseInt(userListNodeVersionAttr.getTextContent());
+        versionValue++;
+        userListNodeVersionAttr.setNodeValue(String.valueOf(versionValue));
+
+        return userListDocument;
     }
 }
