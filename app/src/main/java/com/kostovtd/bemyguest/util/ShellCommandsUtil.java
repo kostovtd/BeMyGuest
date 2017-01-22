@@ -10,5 +10,11 @@ public class ShellCommandsUtil {
 
     public static final String CHANGE_CURRENT_DIRECTORY = "cd";
 
+    public static final String CHANGE_PERMISSIONS = "chmod";
 
+    public static final String GET_CURRENT_PERMISSIONS_OCTAL = "stat -c \"%a\"";
+
+    // PERMISSIONS
+
+    public static final String FULL_READ_WRITE_PERMISSIONS = "666";
 }

@@ -66,17 +66,20 @@ public class GuestManager {
                         boolean userListFileExists = userListFile.exists();
 
                         if(userListFileExists) {
-//                            String changeDir = ShellCommandsUtil.CHANGE_CURRENT_DIRECTORY + " " + USER_DIR;
-//                            String chmod = "chmod 666 userlist.xml";
-//                            List<String> commands = new ArrayList<>();
-//                            commands.add(changeDir);
-//                            commands.add(chmod);
-//                            Shell.SU.run(commands);
-                            Document userListDocument = xmlManager.loadFile(userListFile);
-                            if(userListDocument != null) {
-                                userListDocument = updateUserListFile(userListDocument);
-                                xmlManager.updateFile(userListDocument, userListFile);
+                            SuperUserManager superUserManager = new SuperUserManager();
+                            List<String> result = superUserManager.changeDirectory(USER_DIR)
+                                            .getCurrentPermissions("userlist.xml")
+                                            .executeCommands();
+                            if(result != null && result.size() > 0) {
+                                for(String resultReccord : result) {
+                                    Log.d(TAG, "test: " + resultReccord);
+                                }
                             }
+//                            Document userListDocument = xmlManager.loadFile(userListFile);
+//                            if(userListDocument != null) {
+//                                userListDocument = updateUserListFile(userListDocument);
+//                                xmlManager.updateFile(userListDocument, userListFile);
+//                            }
                         } else {
                             String missingDirStr = mContext.getString(R.string.status_missing_directory);
                             String dirStr = USER_DIR + USER_LIST_FILE_NAME;
@@ -160,8 +163,11 @@ public class GuestManager {
     }
 
 
-
-
+    /**
+     * Insert a new user XML element into the file.
+     * @param userListDocument The file to be updated.
+     * @return {@link Document} object containing the update file.
+     */
     private Document updateUserListFile(Document userListDocument) {
         // update userlist node attributes
         Node userListNode = userListDocument.getFirstChild();
